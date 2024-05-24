@@ -1,0 +1,88 @@
+Steps in Starting Containers on Docker
+
+Requirments:
+
+GitLab
+Docker Desktop
+IntelliJ studio
+
+STEP 1: Create a new project folder - docker_training
+STEP 2: Open in intelliJ, then open a gitbash terminal to test the webserver instance (hello-world.js)
+
+
+--------------------- hello-world.js (code) ---------------------
+        const http = require('http');
+        
+        const hostname = 'localhost';
+        const port = 3000;
+        
+        const server = http.createServer((req, res) => {
+          if (req.url === '/hello') {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/plain');
+            res.end('Hello World!');
+          } else {
+            res.statusCode = 404;
+            res.end('Not Found');
+          }
+        });
+        
+        server.listen(port, '0.0.0.0', () => {
+          console.log(`Server running at http://${hostname}:${port}/`);
+        });
+--------------------- (End of Code) ---------------------
+
+STEP 3: Modify Docker desktop settings to allow http
+
+STEP 4: Write the Docker script
+
+        # Use the Ubuntu image from the specified IP address
+        FROM 172.19.0.136:5000/ubuntu:22.04
+        
+        # Echo 'Welcome to docker!' when the container starts
+        RUN echo 'Welcome to docker training!'
+        
+        # Update package lists and install Node.js
+        RUN apt-get update && apt-get install -y nodejs
+        
+        #Copy file from local folder to container
+        COPY ./hello-world.js /hello-world.js
+        
+        EXPOSE 5000
+        CMD node hello-world.js
+
+
+-------------------------- ## List of Commands ## -------------------------------
+
+PULL IMAGES
+docker pull 172.19.0.136:5000/ubuntu:22.04
+
+BUILDING CONTAINER
+docker build -t docker-ws-1 -f .idea/Dockerfile .
+docker build -t docker-ws-1 .
+
+LIST IMAGES
+docker images -a
+
+docker ps
+docker ps -a
+
+docker stop <ID>
+
+
+RUN IN BACKGROUND (NO NAME)
+docker run -d -p 3000:3000 docker-ws-1
+docker run -d -p 8080:3000 docker-ws-1
+
+RUNNING CONTAINER WITH NAME
+docker run -it -p 3000:3000 --name docker-container docker-ws-1
+
+REMOVING CONTAINER
+docker run -it -p 3000:3000 --rm --name docker-container docker-ws-1
+
+DOCKER TAG
+docker tag docker-ws-1 172.19.0.136:5000/docker-ws-1:jesquivel
+
+DOCKER PUSH
+docker push 172.19.0.136:5000/docker-ws-1:jesquivel
+
